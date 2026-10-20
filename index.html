@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>回家的灯 · 九重春</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage" class="scene-home" aria-live="polite">
+        <div class="sky-layer" aria-hidden="true"></div>
+        <div class="city-silhouette" aria-hidden="true"></div>
+        <div class="light-wash" aria-hidden="true"></div>
+        <div class="home-glow" aria-hidden="true"></div>
+
+        <div id="sprite" class="sprite hidden" aria-hidden="true">
+          <img
+            id="sprite-img"
+            class="sprite-img"
+            src="assets/sprites/haru_neutral.png"
+            alt="九重春"
+            draggable="false"
+          />
+        </div>
+
+        <section id="title-screen" class="overlay-screen">
+          <div class="title-copy">
+            <p class="title-series">对话与相处 · 第一幕可玩</p>
+            <h1 class="title-brand">回家的灯</h1>
+            <p class="title-tagline">
+              九重春，27岁。冷脸，娇小，社畜。<br />
+              家的温度与恋爱并行——前者不会被后者替代。
+            </p>
+            <div class="title-actions">
+              <button type="button" id="btn-start" class="btn primary">开始游戏</button>
+              <button type="button" id="btn-continue" class="btn ghost hidden">继续</button>
+            </div>
+            <p class="title-hint">第一幕丰满版 · 线性不重复 · 亲昵保留</p>
+          </div>
+        </section>
+
+        <div id="game-ui" class="hidden">
+          <div class="top-bar">
+            <div class="status-cluster">
+              <span id="chapter-pill" class="affection">初遇</span>
+              <span id="time-pill" class="affection soft">—</span>
+              <span id="intimacy-pill" class="affection">亲密 0 · 相识</span>
+              <span id="safety-pill" class="affection soft">安心 35</span>
+            </div>
+            <button type="button" id="btn-menu" class="btn tiny ghost">菜单</button>
+          </div>
+
+          <div id="dialogue-box" class="dialogue-box">
+            <div id="speaker" class="speaker"></div>
+            <p id="dialogue-text" class="dialogue-text"></p>
+            <span id="click-hint" class="click-hint" aria-hidden="true">▼</span>
+          </div>
+
+          <div id="choices" class="choices hidden" role="group" aria-label="选项"></div>
+        </div>
+
+        <section id="ending-screen" class="overlay-screen hidden">
+          <div class="ending-card">
+            <p class="ending-label">END</p>
+            <h2 id="ending-title" class="ending-title"></h2>
+            <p id="ending-text" class="ending-text"></p>
+            <div class="title-actions">
+              <button type="button" id="btn-restart" class="btn primary">再玩一次</button>
+              <button type="button" id="btn-title" class="btn ghost">返回标题</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="menu-screen" class="overlay-screen dim hidden">
+          <div class="menu-panel">
+            <h3>菜单</h3>
+            <button type="button" id="btn-save" class="btn block">保存进度</button>
+            <button type="button" id="btn-load" class="btn block">读取进度</button>
+            <button type="button" id="btn-to-title" class="btn block ghost">返回标题</button>
+            <button type="button" id="btn-close-menu" class="btn block ghost">关闭</button>
+            <p id="menu-toast" class="menu-toast" aria-live="polite"></p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
