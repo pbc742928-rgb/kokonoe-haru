@@ -1,6 +1,6 @@
 import { CHAPTERS, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v13";
+const SAVE_KEY = "kokonoe-haru-save-v14";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
