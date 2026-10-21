@@ -249,12 +249,27 @@ async function boot() {
   ui.showTitle();
 }
 
+function renderTestNodes() {
+  const list = $("test-node-list");
+  if (!list) return;
+  list.innerHTML = "";
+  engine.getTestNodes().forEach((node) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "test-node-btn";
+    btn.innerHTML = `<span class="test-node-title">${node.title}</span><span class="test-node-blurb">${node.blurb}</span>`;
+    btn.addEventListener("click", () => engine.startAtNode(node.id));
+    list.appendChild(btn);
+  });
+}
+
 function bind() {
   $("btn-start").addEventListener("click", () => engine.start());
   $("btn-continue").addEventListener("click", async () => {
     await engine.load();
     ui.closeMenu();
   });
+  renderTestNodes();
   $("btn-restart").addEventListener("click", () => engine.start());
   $("btn-title").addEventListener("click", () => ui.showTitle());
   $("btn-menu").addEventListener("click", (e) => {

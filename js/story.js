@@ -2357,6 +2357,63 @@ export const CHAPTERS = [
   },
 ];
 
+/** 第一幕测试跳转节点（按章节入口，并预设合理亲密/安心/flags） */
+export const TEST_NODES = [
+  {
+    id: "node_meet",
+    chapterId: "meet",
+    title: "① 初见",
+    blurb: "站台相救 → 带回家里",
+    intimacy: 0,
+    safety: 35,
+    flags: [],
+  },
+  {
+    id: "node_week",
+    chapterId: "week",
+    title: "② 熟悉同居",
+    blurb: "留下之后 → 逐渐有烟火气",
+    intimacy: 28,
+    safety: 58,
+    flags: [
+      "pulled_to_safety",
+      "offered_home",
+      "asked_why_live",
+      "entered_home",
+      "lent_clothes",
+      "roommate_deal",
+      "gave_bed",
+      "called_out_pride",
+    ],
+  },
+  {
+    id: "node_crush",
+    chapterId: "half_month",
+    title: "③ 开始心动",
+    blurb: "半个月前后 → 心动干扰参数",
+    intimacy: 48,
+    safety: 70,
+    flags: [
+      "pulled_to_safety",
+      "offered_home",
+      "asked_why_live",
+      "entered_home",
+      "lent_clothes",
+      "roommate_deal",
+      "gave_bed",
+      "called_out_pride",
+      "hot_mocha",
+      "gentle_settle",
+      "rent_aa",
+      "shared_night",
+      "her_care_start",
+      "hairdryer",
+      "player_notice_unguarded",
+      "boundary_ok",
+    ],
+  },
+];
+
 export const PLANNED_CHAPTERS = [
   {
     id: "mid_notice",

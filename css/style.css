@@ -273,6 +273,52 @@ button {
   opacity: 0.88;
 }
 
+.test-nodes {
+  margin: 22px 0 8px;
+  text-align: left;
+}
+
+.test-nodes-label {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+}
+
+.test-node-list {
+  display: grid;
+  gap: 8px;
+}
+
+.test-node-btn {
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(243, 235, 224, 0.16);
+  background: rgba(243, 235, 224, 0.08);
+  color: var(--paper);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.test-node-btn:hover {
+  background: rgba(232, 160, 74, 0.2);
+  transform: translateY(-1px);
+}
+
+.test-node-title {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.test-node-blurb {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
 .title-actions {
   display: flex;
   flex-wrap: wrap;

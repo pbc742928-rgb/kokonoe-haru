@@ -1,6 +1,6 @@
-import { CHAPTERS, resolveCampaignEnding } from "./story.js";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v20";
+const SAVE_KEY = "kokonoe-haru-save-v21";
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 
@@ -121,6 +121,36 @@ export class GalEngine {
     this.reset();
     this.ui.showGame();
     this.beginChapter();
+  }
+
+  getTestNodes() {
+    return TEST_NODES.map((node) => {
+      const chapterIndex = CHAPTERS.findIndex((c) => c.id === node.chapterId);
+      return { ...node, chapterIndex };
+    }).filter((node) => node.chapterIndex >= 0);
+  }
+
+  async startAtNode(nodeId) {
+    if (!this.ready) await this.init();
+    const node = this.getTestNodes().find((n) => n.id === nodeId);
+    if (!node) {
+      this.ui.toast("找不到该测试节点。");
+      return false;
+    }
+    this.reset();
+    this.chapterIndex = node.chapterIndex;
+    this.sceneIndex = 0;
+    this.intimacy = clamp(Number(node.intimacy) || 0, 0, 100);
+    this.safety = clamp(Number(node.safety) || 35, 0, 100);
+    this.flags = Array.isArray(node.flags) ? [...node.flags] : [];
+    // 跳过初见时默认已有称呼，避免后段缺失名字
+    if (node.chapterId !== "meet") {
+      this.setPlayerName(DEFAULT_PLAYER_NAME);
+    }
+    this.ui.showGame();
+    this.syncHud(false);
+    this.beginChapter();
+    return true;
   }
 
   getState() {
