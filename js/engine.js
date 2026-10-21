@@ -1,6 +1,6 @@
 import { CHAPTERS, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v19";
+const SAVE_KEY = "kokonoe-haru-save-v20";
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 
