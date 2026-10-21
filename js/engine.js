@@ -1,6 +1,7 @@
 import { CHAPTERS, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v14";
+const SAVE_KEY = "kokonoe-haru-save-v15";
+const LOG_LIMIT = 100;
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -37,6 +38,23 @@ export class GalEngine {
     this._lineDone = null;
     this.cps = 36;
     this.phase = "idle";
+    this.log = [];
+  }
+
+  pushLog(speaker, text) {
+    const entry = {
+      speaker: speaker || "",
+      text: text || "",
+    };
+    if (!entry.text) return;
+    this.log.push(entry);
+    if (this.log.length > LOG_LIMIT) {
+      this.log.splice(0, this.log.length - LOG_LIMIT);
+    }
+  }
+
+  getLog() {
+    return [...this.log];
   }
 
   async init() {
@@ -58,8 +76,10 @@ export class GalEngine {
     this.awaitingChoice = false;
     this.phase = "idle";
     this._lineDone = null;
+    this.log = [];
     this.ui.hideChoices();
     this.ui.hideEnding();
+    this.ui.closeLog?.();
     this.syncHud(false);
   }
 
@@ -239,6 +259,7 @@ export class GalEngine {
             onSelect: () => {
               this.awaitingChoice = false;
               this.ui.hideChoices();
+              this.pushLog("你", c.text || "");
               (c.flags || []).forEach((f) => this.addFlag(f));
               this.applyDelta({
                 intimacy: c.intimacy || 0,
@@ -269,8 +290,11 @@ export class GalEngine {
       } else if (line.mood && this.ui.sprite && !this.ui.sprite.classList.contains("hidden")) {
         this.ui.setMood(line.mood);
       }
-      this.ui.setSpeaker(line.speaker ?? "");
-      this.typeText(line.text || "", next);
+      const speaker = line.speaker ?? "";
+      const text = line.text || "";
+      this.pushLog(speaker, text);
+      this.ui.setSpeaker(speaker);
+      this.typeText(text, next);
     };
     next();
   }

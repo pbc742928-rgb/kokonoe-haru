@@ -8,6 +8,8 @@ const ui = {
   game: $("game-ui"),
   ending: $("ending-screen"),
   menu: $("menu-screen"),
+  logScreen: $("log-screen"),
+  logList: $("log-list"),
   sprite: $("sprite"),
   spriteImg: $("sprite-img"),
   speaker: $("speaker"),
@@ -33,6 +35,7 @@ const ui = {
     this.game.classList.add("hidden");
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
+    this.closeLog();
     this.setSpriteVisible(false);
     this.btnContinue.classList.toggle("hidden", !engine.hasSave());
   },
@@ -41,6 +44,7 @@ const ui = {
     this.title.classList.add("hidden");
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
+    this.closeLog();
     this.game.classList.remove("hidden");
   },
 
@@ -135,6 +139,7 @@ const ui = {
   },
 
   openMenu() {
+    this.closeLog();
     this.toastEl.textContent = "";
     this.menu.classList.remove("hidden");
   },
@@ -142,6 +147,43 @@ const ui = {
   closeMenu() {
     this.menu.classList.add("hidden");
     this.toastEl.textContent = "";
+  },
+
+  openLog(entries = []) {
+    this.closeMenu();
+    this.logList.innerHTML = "";
+    if (!entries.length) {
+      const empty = document.createElement("p");
+      empty.className = "log-empty";
+      empty.textContent = "暂时还没有可回顾的文本。";
+      this.logList.appendChild(empty);
+    } else {
+      entries.forEach((entry) => {
+        const item = document.createElement("article");
+        item.className = "log-item";
+        const who = document.createElement("p");
+        who.className = "log-speaker" + (entry.speaker ? "" : " is-narration");
+        who.textContent = entry.speaker || "旁白";
+        const body = document.createElement("p");
+        body.className = "log-text";
+        body.textContent = entry.text;
+        item.appendChild(who);
+        item.appendChild(body);
+        this.logList.appendChild(item);
+      });
+    }
+    this.logScreen.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      this.logList.scrollTop = this.logList.scrollHeight;
+    });
+  },
+
+  closeLog() {
+    this.logScreen?.classList.add("hidden");
+  },
+
+  isLogOpen() {
+    return this.logScreen && !this.logScreen.classList.contains("hidden");
   },
 
   toast(msg) {
@@ -174,7 +216,13 @@ function bind() {
     e.stopPropagation();
     ui.openMenu();
   });
+  $("btn-log").addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (ui.isLogOpen()) ui.closeLog();
+    else ui.openLog(engine.getLog());
+  });
   $("btn-close-menu").addEventListener("click", () => ui.closeMenu());
+  $("btn-close-log").addEventListener("click", () => ui.closeLog());
   $("btn-save").addEventListener("click", () => engine.save());
   $("btn-load").addEventListener("click", async () => {
     await engine.load();
@@ -185,10 +233,21 @@ function bind() {
     ui.showTitle();
   });
 
-  $("dialogue-box").addEventListener("click", () => engine.advance());
+  $("dialogue-box").addEventListener("click", () => {
+    if (ui.isLogOpen()) return;
+    engine.advance();
+  });
+
+  $("log-screen").addEventListener("click", (e) => {
+    if (e.target === $("log-screen")) ui.closeLog();
+  });
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (ui.isLogOpen()) {
+        ui.closeLog();
+        return;
+      }
       if (!ui.menu.classList.contains("hidden")) ui.closeMenu();
       else if (!ui.game.classList.contains("hidden")) ui.openMenu();
       return;
@@ -196,6 +255,7 @@ function bind() {
     if (e.key === " " || e.key === "Enter") {
       if (!ui.title.classList.contains("hidden")) return;
       if (!ui.menu.classList.contains("hidden")) return;
+      if (ui.isLogOpen()) return;
       if (!ui.ending.classList.contains("hidden")) return;
       e.preventDefault();
       engine.advance();

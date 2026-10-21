@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
@@ -59,7 +59,10 @@
               <span id="intimacy-pill" class="affection">亲密 0 · 相识</span>
               <span id="safety-pill" class="affection soft">安心 35</span>
             </div>
-            <button type="button" id="btn-menu" class="btn tiny ghost">菜单</button>
+            <div class="top-actions">
+              <button type="button" id="btn-log" class="btn tiny ghost">回顾</button>
+              <button type="button" id="btn-menu" class="btn tiny ghost">菜单</button>
+            </div>
           </div>
 
           <div id="dialogue-box" class="dialogue-box">
@@ -91,6 +94,16 @@
             <button type="button" id="btn-to-title" class="btn block ghost">返回标题</button>
             <button type="button" id="btn-close-menu" class="btn block ghost">关闭</button>
             <p id="menu-toast" class="menu-toast" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section id="log-screen" class="overlay-screen dim hidden">
+          <div class="log-panel">
+            <div class="log-header">
+              <h3>文本回顾</h3>
+              <button type="button" id="btn-close-log" class="btn tiny ghost">关闭</button>
+            </div>
+            <div id="log-list" class="log-list"></div>
           </div>
         </section>
       </div>
