@@ -587,6 +587,64 @@ button {
   opacity: 0.92;
 }
 
+.name-panel {
+  width: min(420px, 92%);
+  padding: 28px 24px 22px;
+  border-radius: 16px;
+  background: rgba(22, 28, 38, 0.94);
+  border: 1px solid rgba(243, 235, 224, 0.12);
+  color: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.name-panel h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.name-hint {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  opacity: 0.78;
+  text-align: left;
+}
+
+.name-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.name-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(243, 235, 224, 0.22);
+  background: rgba(243, 235, 224, 0.08);
+  color: var(--paper);
+  font: inherit;
+  font-size: 1.05rem;
+  outline: none;
+}
+
+.name-input:focus {
+  border-color: rgba(232, 160, 74, 0.75);
+  box-shadow: 0 0 0 3px rgba(232, 160, 74, 0.18);
+}
+
+.name-error {
+  min-height: 1.2em;
+  margin: 8px 0 14px;
+  font-size: 0.85rem;
+  color: #ffb4a2;
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;

@@ -106,6 +106,25 @@
             <div id="log-list" class="log-list"></div>
           </div>
         </section>
+
+        <section id="name-screen" class="overlay-screen dim hidden">
+          <div class="name-panel">
+            <h3>自我介绍</h3>
+            <p class="name-hint">输入你的姓或昵称。她会以此称呼你（例如输入「尘」，她会叫你「尘先生」）。</p>
+            <label class="name-label" for="name-input">你的称呼</label>
+            <input
+              id="name-input"
+              class="name-input"
+              type="text"
+              maxlength="8"
+              placeholder="例如：尘"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <p id="name-error" class="name-error" aria-live="polite"></p>
+            <button type="button" id="btn-confirm-name" class="btn primary block">确定</button>
+          </div>
+        </section>
       </div>
     </div>
 

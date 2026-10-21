@@ -1,7 +1,7 @@
 /**
  * 《回家的灯》——第一幕线性唯一场景（丰满版）
  * 素材来源：前三页主线；省略色情，保留正常亲昵；人机感仅作偶发萌点。
- * 叙述第二人称「你」；她称你「尘先生」。
+ * 叙述第二人称「你」；她称你「{honor}」。
  */
 
 export const LONG_ARC = {
@@ -196,15 +196,18 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "你指了指胸前湿透的工牌。",
+            text: "你指了指胸前湿透的工牌，准备先报上自己的称呼。",
           },
           {
-            speaker: "你",
-            text: "我姓尘。至少先告诉我，该怎么叫你。",
+            askName: true,
+          },
+          {
+            speaker: "{name}",
+            text: "我叫{name}。至少先告诉我，该怎么叫你。",
           },
           {
             speaker: "",
-            text: "她眯起眼辨认那个字。目光第一次真正落到你脸上，不再穿过你看向别处。",
+            text: "她眯起眼，像在把这个名字放进记忆。目光第一次真正落到你脸上，不再穿过你看向别处。",
           },
           {
             speaker: "九重春",
@@ -216,7 +219,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "尘先生。记住了。虽然不知道还有没有后续使用场景。",
+            text: "{honor}。记住了。虽然不知道还有没有后续使用场景。",
           },
         ],
         choices: [
@@ -236,7 +239,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "尘先生很谨慎。",
+                text: "{honor}很谨慎。",
               },
               {
                 speaker: "",
@@ -334,14 +337,14 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "尘先生，我们认识了……四十七分钟。",
+                text: "{honor}，我们认识了……四十七分钟。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "所以门能反锁，钥匙交给你。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "如果还是不放心，我陪你回站务室。只是今晚别一个人待着。",
               },
               {
@@ -374,7 +377,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "……看来要麻烦尘先生。只住一晚。我可以睡玄关。",
+                text: "……看来要麻烦{honor}。只住一晚。我可以睡玄关。",
               },
               {
                 speaker: "",
@@ -432,7 +435,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "尘先生。现在反悔还来得及。",
+            text: "{honor}。现在反悔还来得及。",
           },
         ],
         choices: [
@@ -447,7 +450,7 @@ export const CHAPTERS = [
                 text: "你没有接那句话，只打开门，弯腰从鞋柜里拆出一双备用拖鞋。春盯着拖鞋看了几秒，像那比任何口头保证都更难应付。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "地板弄湿了我来擦。",
               },
               {
@@ -693,7 +696,7 @@ export const CHAPTERS = [
             text: "你把毯子和枕头拖向沙发。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "卧室有空调，温度稳一点。你淋过雨。今晚睡床。",
           },
           {
@@ -710,7 +713,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "……那就今晚。尘先生，晚安。",
+            text: "……那就今晚。{honor}，晚安。",
           },
         ],
         choices: [
@@ -776,7 +779,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "尘先生。我走了。谢谢昨晚。",
+            text: "{honor}。我走了。谢谢昨晚。",
           },
           {
             speaker: "",
@@ -803,7 +806,7 @@ export const CHAPTERS = [
                 text: "「处理」两个字轻得没有落点。你没有逼她承认，只把话说得很慢。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "可以等你找到房子、发到工资再搬。在那之前，这里有门锁，也有灯。",
               },
               {
@@ -843,7 +846,7 @@ export const CHAPTERS = [
                 text: "你点头，像在同意她的尊严，又轻轻把那层逞强掀开。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "可以等你找到住的地方、领到工资。在那之前，先别把离开当成唯一能做的事。",
               },
               {
@@ -909,7 +912,7 @@ export const CHAPTERS = [
             text: "你把胡椒瓶往中间推了推。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "顺便。你平时口味重吗。",
           },
           {
@@ -941,7 +944,7 @@ export const CHAPTERS = [
                 text: "……糖分偏高。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "那少喝半杯。",
               },
               {
@@ -949,7 +952,7 @@ export const CHAPTERS = [
                 text: "你已经拎起包。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "反正别空肚子灌冰的。",
               },
               {
@@ -958,7 +961,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "尘先生。谢谢。",
+                text: "{honor}。谢谢。",
               },
               {
                 speaker: "",
@@ -1271,7 +1274,7 @@ export const CHAPTERS = [
             text: "你的声音混在嗡鸣里。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "湿着会头疼。",
           },
           {
@@ -1328,7 +1331,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "尘先生平时……也会替别人吹头发吗。",
+                text: "{honor}平时……也会替别人吹头发吗。",
               },
               {
                 speaker: "",
@@ -1353,7 +1356,7 @@ export const CHAPTERS = [
             text: "你说得很自然。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "明天周末。你要是想睡懒觉，床让给你。",
           },
           {
@@ -1690,7 +1693,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "",
-                text: "她去沙发边坐下。很久以后，忽然极轻地说了句：「晚安。尘先生。」",
+                text: "她去沙发边坐下。很久以后，忽然极轻地说了句：「晚安。{honor}。」",
               },
             ],
           },
@@ -1806,7 +1809,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "……碰巧。尘先生回来得刚好。",
+            text: "……碰巧。{honor}回来得刚好。",
           },
         ],
         choices: [
@@ -1914,7 +1917,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "现在……至少有地方可以回来。先这样。尘先生。",
+            text: "现在……至少有地方可以回来。先这样。{honor}。",
           },
         ],
         choices: [
@@ -1979,7 +1982,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "九重春",
-                text: "……先这样。谢谢。尘先生。",
+                text: "……先这样。谢谢。{honor}。",
               },
             ],
           },
@@ -2024,7 +2027,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "尘先生笑起来很松。关掉屏幕以后……不太像。",
+            text: "{honor}笑起来很松。关掉屏幕以后……不太像。",
           },
           {
             speaker: "",
@@ -2060,7 +2063,7 @@ export const CHAPTERS = [
             reply: [
               {
                 speaker: "九重春",
-                text: "好听不好听，我自己判断。尘先生没有否决权。",
+                text: "好听不好听，我自己判断。{honor}没有否决权。",
               },
               {
                 speaker: "",

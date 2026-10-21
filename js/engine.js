@@ -1,7 +1,15 @@
 import { CHAPTERS, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v16";
+const SAVE_KEY = "kokonoe-haru-save-v17";
 const LOG_LIMIT = 100;
+const DEFAULT_PLAYER_NAME = "尘";
+
+function buildHonor(name) {
+  const n = String(name || "").trim();
+  if (!n) return `${DEFAULT_PLAYER_NAME}先生`;
+  if (/(先生|小姐|女士|老师|桑)$/.test(n)) return n;
+  return `${n}先生`;
+}
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -39,12 +47,30 @@ export class GalEngine {
     this.cps = 36;
     this.phase = "idle";
     this.log = [];
+    this.playerName = DEFAULT_PLAYER_NAME;
+    this.playerHonor = buildHonor(DEFAULT_PLAYER_NAME);
+    this.awaitingName = false;
+  }
+
+  setPlayerName(raw) {
+    const name = String(raw || "")
+      .trim()
+      .replace(/\s+/g, "")
+      .slice(0, 8);
+    this.playerName = name || DEFAULT_PLAYER_NAME;
+    this.playerHonor = buildHonor(this.playerName);
+  }
+
+  fillTemplate(text) {
+    return String(text || "")
+      .replaceAll("{name}", this.playerName)
+      .replaceAll("{honor}", this.playerHonor);
   }
 
   pushLog(speaker, text) {
     const entry = {
-      speaker: speaker || "",
-      text: text || "",
+      speaker: this.fillTemplate(speaker || ""),
+      text: this.fillTemplate(text || ""),
     };
     if (!entry.text) return;
     this.log.push(entry);
@@ -54,7 +80,10 @@ export class GalEngine {
   }
 
   getLog() {
-    return [...this.log];
+    return this.log.map((entry) => ({
+      speaker: this.fillTemplate(entry.speaker),
+      text: this.fillTemplate(entry.text),
+    }));
   }
 
   async init() {
@@ -77,9 +106,13 @@ export class GalEngine {
     this.phase = "idle";
     this._lineDone = null;
     this.log = [];
+    this.playerName = DEFAULT_PLAYER_NAME;
+    this.playerHonor = buildHonor(DEFAULT_PLAYER_NAME);
+    this.awaitingName = false;
     this.ui.hideChoices();
     this.ui.hideEnding();
     this.ui.closeLog?.();
+    this.ui.closeNamePrompt?.();
     this.syncHud(false);
   }
 
@@ -98,6 +131,8 @@ export class GalEngine {
       safety: this.safety,
       flags: [...this.flags],
       ended: this.ended,
+      playerName: this.playerName,
+      playerHonor: this.playerHonor,
     };
   }
 
@@ -106,7 +141,7 @@ export class GalEngine {
       this.ui.toast("结局画面无法保存，请重新开始。");
       return false;
     }
-    if (this.awaitingChoice || this.typing || this._lineDone) {
+    if (this.awaitingChoice || this.awaitingName || this.typing || this._lineDone) {
       this.ui.toast("请先完成当前对话再保存。");
       return false;
     }
@@ -135,9 +170,13 @@ export class GalEngine {
       this.flags = Array.isArray(data.flags) ? data.flags : [];
       this.ended = false;
       this.awaitingChoice = false;
+      this.awaitingName = false;
       this._lineDone = null;
+      this.setPlayerName(data.playerName || DEFAULT_PLAYER_NAME);
+      if (data.playerHonor) this.playerHonor = String(data.playerHonor);
       this.ui.hideChoices();
       this.ui.hideEnding();
+      this.ui.closeNamePrompt?.();
       this.ui.showGame();
       this.syncHud(false);
       this.ui.toast("进度已读取。");
@@ -255,11 +294,11 @@ export class GalEngine {
         this.ui.setClickHint(false);
         this.ui.showChoices(
           card.choices.map((c) => ({
-            text: c.text,
+            text: this.fillTemplate(c.text),
             onSelect: () => {
               this.awaitingChoice = false;
               this.ui.hideChoices();
-              this.pushLog("你", c.text || "");
+              this.pushLog("{name}", c.text || "");
               (c.flags || []).forEach((f) => this.addFlag(f));
               this.applyDelta({
                 intimacy: c.intimacy || 0,
@@ -283,6 +322,20 @@ export class GalEngine {
         return;
       }
       const line = list.shift();
+      if (line.askName) {
+        this.awaitingName = true;
+        this.ui.setClickHint(false);
+        this.ui.openNamePrompt({
+          defaultValue: this.playerName || DEFAULT_PLAYER_NAME,
+          onConfirm: (raw) => {
+            this.setPlayerName(raw);
+            this.awaitingName = false;
+            this.ui.closeNamePrompt();
+            next();
+          },
+        });
+        return;
+      }
       if (line.revealSprite) {
         this.ui.setSpriteVisible(true, line.mood || "neutral");
       } else if (line.hideSprite) {
@@ -290,8 +343,8 @@ export class GalEngine {
       } else if (line.mood && this.ui.sprite && !this.ui.sprite.classList.contains("hidden")) {
         this.ui.setMood(line.mood);
       }
-      const speaker = line.speaker ?? "";
-      const text = line.text || "";
+      const speaker = this.fillTemplate(line.speaker ?? "");
+      const text = this.fillTemplate(line.text || "");
       this.pushLog(speaker, text);
       this.ui.setSpeaker(speaker);
       this.typeText(text, next);
@@ -344,7 +397,7 @@ export class GalEngine {
   }
 
   advance() {
-    if (this.ended || this.awaitingChoice) return;
+    if (this.ended || this.awaitingChoice || this.awaitingName) return;
 
     if (this.typing) {
       this.stopTyping();

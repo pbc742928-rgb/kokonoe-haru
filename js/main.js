@@ -10,7 +10,11 @@ const ui = {
   menu: $("menu-screen"),
   logScreen: $("log-screen"),
   logList: $("log-list"),
+  nameScreen: $("name-screen"),
+  nameInput: $("name-input"),
+  nameError: $("name-error"),
   sprite: $("sprite"),
+  _nameConfirm: null,
   spriteImg: $("sprite-img"),
   speaker: $("speaker"),
   spriteMap: {
@@ -36,6 +40,7 @@ const ui = {
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
     this.closeLog();
+    this.closeNamePrompt();
     this.setSpriteVisible(false);
     this.btnContinue.classList.toggle("hidden", !engine.hasSave());
   },
@@ -45,6 +50,7 @@ const ui = {
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
     this.closeLog();
+    this.closeNamePrompt();
     this.game.classList.remove("hidden");
   },
 
@@ -186,6 +192,45 @@ const ui = {
     return this.logScreen && !this.logScreen.classList.contains("hidden");
   },
 
+  openNamePrompt({ defaultValue = "尘", onConfirm } = {}) {
+    this.closeMenu();
+    this.closeLog();
+    this._nameConfirm = onConfirm;
+    this.nameError.textContent = "";
+    this.nameInput.value = defaultValue || "尘";
+    this.nameScreen.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      this.nameInput.focus();
+      this.nameInput.select();
+    });
+  },
+
+  closeNamePrompt() {
+    this.nameScreen?.classList.add("hidden");
+    this.nameError.textContent = "";
+    this._nameConfirm = null;
+  },
+
+  isNamePromptOpen() {
+    return this.nameScreen && !this.nameScreen.classList.contains("hidden");
+  },
+
+  submitNamePrompt() {
+    const raw = (this.nameInput.value || "").trim();
+    if (!raw) {
+      this.nameError.textContent = "请输入一个称呼。";
+      this.nameInput.focus();
+      return;
+    }
+    if (/[<>{}]/.test(raw)) {
+      this.nameError.textContent = "称呼里请不要使用特殊符号。";
+      this.nameInput.focus();
+      return;
+    }
+    const cb = this._nameConfirm;
+    if (cb) cb(raw);
+  },
+
   toast(msg) {
     this.toastEl.textContent = msg;
   },
@@ -233,8 +278,20 @@ function bind() {
     ui.showTitle();
   });
 
+  $("btn-confirm-name").addEventListener("click", (e) => {
+    e.stopPropagation();
+    ui.submitNamePrompt();
+  });
+  $("name-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.stopPropagation();
+      ui.submitNamePrompt();
+    }
+  });
+
   $("dialogue-box").addEventListener("click", () => {
-    if (ui.isLogOpen()) return;
+    if (ui.isLogOpen() || ui.isNamePromptOpen()) return;
     engine.advance();
   });
 
@@ -243,6 +300,10 @@ function bind() {
   });
 
   window.addEventListener("keydown", (e) => {
+    if (ui.isNamePromptOpen()) {
+      if (e.key === "Escape") e.preventDefault();
+      return;
+    }
     if (e.key === "Escape") {
       if (ui.isLogOpen()) {
         ui.closeLog();
