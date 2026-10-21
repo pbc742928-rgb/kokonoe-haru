@@ -1221,7 +1221,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "{name}",
-                text: "计较这些我更亏。留你不是为了看流水账。",
+                text: "没那么容易亏，而且又不是留你记流水账的。",
               },
               {
                 speaker: "",
