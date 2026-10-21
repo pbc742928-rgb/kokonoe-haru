@@ -1,6 +1,6 @@
 import { CHAPTERS, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v9";
+const SAVE_KEY = "kokonoe-haru-save-v12";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -262,6 +262,13 @@ export class GalEngine {
         return;
       }
       const line = list.shift();
+      if (line.revealSprite) {
+        this.ui.setSpriteVisible(true, line.mood || "neutral");
+      } else if (line.hideSprite) {
+        this.ui.setSpriteVisible(false);
+      } else if (line.mood && this.ui.sprite && !this.ui.sprite.classList.contains("hidden")) {
+        this.ui.setMood(line.mood);
+      }
       this.ui.setSpeaker(line.speaker ?? "");
       this.typeText(line.text || "", next);
     };
