@@ -132,12 +132,17 @@ button {
 
 .scene-night .sky-layer {
   background:
-    radial-gradient(circle at 75% 18%, rgba(255, 240, 200, 0.55), transparent 12%),
-    linear-gradient(180deg, #0f1828 0%, #1e2a40 55%, #3a3548 100%);
+    #0f1828
+    url("../assets/bg/bg_night.png") center / cover no-repeat;
 }
 
-.scene-night .city-silhouette {
-  opacity: 0.85;
+.scene-night .city-silhouette,
+.scene-night .home-glow {
+  display: none;
+}
+
+.scene-night .light-wash {
+  background: linear-gradient(180deg, transparent 50%, rgba(12, 16, 24, 0.28));
 }
 
 .scene-rooftop .sky-layer {
