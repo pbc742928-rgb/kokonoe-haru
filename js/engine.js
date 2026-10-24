@@ -43,10 +43,17 @@ function splitDialogueChunks(text, maxLen = DIALOGUE_CHUNK_MAX) {
           window.lastIndexOf("，"),
           window.lastIndexOf("、"),
           window.lastIndexOf("："),
+          window.lastIndexOf("——"),
           window.lastIndexOf(","),
           window.lastIndexOf(" ")
         );
-        if (cut < Math.floor(maxLen * 0.45)) cut = maxLen;
+        if (cut < Math.floor(maxLen * 0.45)) {
+          cut = maxLen;
+        } else if (rest.slice(cut, cut + 2) === "——") {
+          cut += 2; // 破折号留在上一句
+        } else {
+          cut += 1; // 逗号等标点留在上一句，避免下框以「，」开头
+        }
         pieces.push(rest.slice(0, cut).trim());
         rest = rest.slice(cut).trim();
       }
