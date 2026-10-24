@@ -127,7 +127,17 @@ button {
 
 .scene-corridor .sky-layer {
   background:
-    linear-gradient(180deg, #243044 0%, #5a4a58 50%, #b88868 100%);
+    #243044
+    url("../assets/bg/bg_corridor.png") center / cover no-repeat;
+}
+
+.scene-corridor .city-silhouette,
+.scene-corridor .home-glow {
+  display: none;
+}
+
+.scene-corridor .light-wash {
+  background: linear-gradient(180deg, transparent 50%, rgba(12, 16, 24, 0.22));
 }
 
 .scene-night .sky-layer {
