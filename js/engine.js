@@ -1,14 +1,96 @@
 import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v22";
+const SAVE_KEY = "kokonoe-haru-save-v23";
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
+/** 单框建议字数；超出则按句拆开依次显示 */
+const DIALOGUE_CHUNK_MAX = 34;
 
 function buildHonor(name) {
   const n = String(name || "").trim();
   if (!n) return `${DEFAULT_PLAYER_NAME}先生`;
   if (/(先生|小姐|女士|老师|桑)$/.test(n)) return n;
   return `${n}先生`;
+}
+
+/**
+ * 把长段落拆成短对话框：优先按句号等断句，单句仍过长再按逗号切开。
+ */
+function splitDialogueChunks(text, maxLen = DIALOGUE_CHUNK_MAX) {
+  const raw = String(text || "").replace(/\r/g, "").trim();
+  if (!raw) return [];
+  if (raw.length <= maxLen) return [raw];
+
+  const byBreak = raw
+    .split(/\n+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const pieces = [];
+  for (const block of byBreak) {
+    const sentences = block.match(/[^。！？；…]+[。！？；…]+|[^。！？；…]+$/g) || [block];
+    for (const sentence of sentences) {
+      const s = sentence.trim();
+      if (!s) continue;
+      if (s.length <= maxLen) {
+        pieces.push(s);
+        continue;
+      }
+      // 长句：尽量在逗号/顿号处切开
+      let rest = s;
+      while (rest.length > maxLen) {
+        const window = rest.slice(0, maxLen + 1);
+        let cut = Math.max(
+          window.lastIndexOf("，"),
+          window.lastIndexOf("、"),
+          window.lastIndexOf("："),
+          window.lastIndexOf(","),
+          window.lastIndexOf(" ")
+        );
+        if (cut < Math.floor(maxLen * 0.45)) cut = maxLen;
+        pieces.push(rest.slice(0, cut).trim());
+        rest = rest.slice(cut).trim();
+      }
+      if (rest) pieces.push(rest);
+    }
+  }
+
+  // 合并过短碎片，避免一句被拆成碎屑
+  const merged = [];
+  for (const part of pieces) {
+    const prev = merged[merged.length - 1];
+    if (prev && prev.length + part.length <= Math.floor(maxLen * 0.85)) {
+      merged[merged.length - 1] = prev + part;
+    } else {
+      merged.push(part);
+    }
+  }
+  return merged.length ? merged : [raw];
+}
+
+function expandLinesForDisplay(lines) {
+  const out = [];
+  for (const line of lines || []) {
+    if (!line || line.askName || (!line.text && (line.revealSprite || line.hideSprite || line.mood))) {
+      if (line) out.push(line);
+      continue;
+    }
+    if (!line.text) {
+      out.push(line);
+      continue;
+    }
+    const chunks = splitDialogueChunks(line.text);
+    chunks.forEach((text, index) => {
+      out.push({
+        ...line,
+        text,
+        // 精灵切换只在首句触发，避免同一行拆段时反复进场
+        revealSprite: index === 0 ? line.revealSprite : undefined,
+        hideSprite: index === 0 ? line.hideSprite : undefined,
+        mood: index === 0 ? line.mood : undefined,
+      });
+    });
+  }
+  return out;
 }
 
 function clamp(n, min, max) {
@@ -345,7 +427,7 @@ export class GalEngine {
   }
 
   enqueueLines(lines, onDone) {
-    const list = [...lines];
+    const list = expandLinesForDisplay(lines);
     const next = () => {
       if (!list.length) {
         onDone?.();
@@ -375,6 +457,10 @@ export class GalEngine {
       }
       const speaker = this.fillTemplate(line.speaker ?? "");
       const text = this.fillTemplate(line.text || "");
+      if (!text && (line.revealSprite || line.hideSprite || line.mood)) {
+        next();
+        return;
+      }
       this.pushLog(speaker, text);
       this.ui.setSpeaker(speaker);
       this.typeText(text, next);
