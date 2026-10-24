@@ -1,6 +1,6 @@
 import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js";
 
-const SAVE_KEY = "kokonoe-haru-save-v23";
+const SAVE_KEY = "kokonoe-haru-save-v24";
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 /** 单框建议字数；超出则按句拆开依次显示 */
