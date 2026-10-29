@@ -1,4 +1,4 @@
-import { GalEngine } from "./engine.js";
+import { GalEngine } from "./engine.js?v=26";
 
 const $ = (id) => document.getElementById(id);
 

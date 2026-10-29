@@ -1,4 +1,4 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=26";
 
 const SAVE_KEY = "kokonoe-haru-save-v26";
 const LOG_LIMIT = 100;
