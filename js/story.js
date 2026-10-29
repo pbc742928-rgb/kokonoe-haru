@@ -1629,6 +1629,10 @@ export const CHAPTERS = [
                 speaker: "",
                 text: "你只是轻轻笑了一下，把台阶递过去。她应了一声，很轻，视线仍不敢抬太高。",
               },
+              {
+                speaker: "",
+                text: "暖风味渐渐散了。她摸了摸干发，肩背比刚才松一点，像终于能喘口气。",
+              },
             ],
           },
         ],
@@ -1641,7 +1645,7 @@ export const CHAPTERS = [
         lines: [
           {
             speaker: "",
-            text: "你说得很自然。",
+            text: "你看着她这副刚缓过来的样子，忽然想到明天不用赶早班。",
           },
           {
             speaker: "{name}",
