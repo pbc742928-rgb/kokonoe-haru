@@ -1,4 +1,4 @@
-import { GalEngine } from "./engine.js?v=26";
+import { GalEngine } from "./engine.js?v=27";
 
 const $ = (id) => document.getElementById(id);
 
@@ -289,6 +289,7 @@ function bind() {
     ui.closeMenu();
   });
   $("btn-to-title").addEventListener("click", () => {
+    engine.autosave();
     engine.reset();
     ui.showTitle();
   });

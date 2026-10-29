@@ -593,6 +593,14 @@ button {
   text-align: center;
 }
 
+.menu-hint {
+  margin: -6px 0 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  opacity: 0.72;
+  text-align: center;
+}
+
 .menu-toast {
   min-height: 1.2em;
   margin: 8px 0 0;
