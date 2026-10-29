@@ -164,6 +164,21 @@ button {
   background: linear-gradient(180deg, transparent 50%, rgba(12, 16, 24, 0.28));
 }
 
+.scene-street .sky-layer {
+  background:
+    #121a28
+    url("../assets/bg/bg_street.png") center / cover no-repeat;
+}
+
+.scene-street .city-silhouette,
+.scene-street .home-glow {
+  display: none;
+}
+
+.scene-street .light-wash {
+  background: linear-gradient(180deg, transparent 52%, rgba(10, 14, 22, 0.3));
+}
+
 .scene-rooftop .sky-layer {
   background:
     radial-gradient(ellipse 80% 50% at 70% 10%, rgba(255, 214, 160, 0.45), transparent 55%),

@@ -389,7 +389,7 @@ export const CHAPTERS = [
       },
       {
         id: "meet_walk_home",
-        scene: "night",
+        scene: "street",
         mood: "neutral",
         showSprite: true,
         lines: [
@@ -571,7 +571,7 @@ export const CHAPTERS = [
       },
       {
         id: "meet_walk_door",
-        scene: "night",
+        scene: "street",
         mood: "neutral",
         showSprite: true,
         lines: [
@@ -1025,7 +1025,7 @@ export const CHAPTERS = [
               },
               {
                 speaker: "",
-                text: "而你站在原地，听见自己心里很轻的一声安稳——原来留她，也不全是为她。",
+                text: "而你站在原地，心里忽然稳了一下。有人陪着，原来挺好的。",
               },
             ],
           },
@@ -1087,7 +1087,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "你看了眼她手边那杯还冒着冷气的冰美式，又看了眼她耳后未干的发梢。这个点灌冰咖啡赶地铁，你太熟了。",
+            text: "你看了眼她手边那杯还冒着冷气的冰美式，又看了眼她耳后未干的发梢。这个点灌冰咖啡赶地铁，标准的社畜节拍。",
           },
         ],
         choices: [
@@ -1543,7 +1543,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "你点头。心里清楚：打动你的不是「看见了什么」，而是她竟能在你的空间里这样不设防——像默认这里暂时安全。",
+            text: "你点头。真正戳到你的，是她竟能在你的空间里这样不设防——像默认这里暂时安全。",
           },
           {
             speaker: "",
@@ -1567,7 +1567,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "指尖偶尔分开她细软的发丝，好让里层也被吹到。每一次触碰，她指节都轻轻收紧——不是拒绝，更像不习惯被人这样靠近。",
+            text: "指尖偶尔分开她细软的发丝，好让里层也被吹到。每一次触碰，她指节都轻轻收紧，像还不习惯被人这样靠近。",
           },
           {
             speaker: "",
@@ -1619,11 +1619,15 @@ export const CHAPTERS = [
               },
               {
                 speaker: "",
-                text: "问题出口，她自己先移开目光。你还没回答，她便低声补了句「随便问的」，手指却始终没有松开那缕头发。",
+                text: "话一出口她就愣住了。独居的人，哪来的别人。耳尖迅速发烫，手指绞紧那缕头发，像想把刚才的问题塞回去。",
+              },
+              {
+                speaker: "{name}",
+                text: "以前会帮妈妈吹。",
               },
               {
                 speaker: "",
-                text: "你看着她放松下来的肩线，忽然明白：善念让她留下；而让你开始在意的，是这种近在咫尺的、不自知的信任。",
+                text: "你只是轻轻笑了一下，把台阶递过去。她应了一声，很轻，视线仍不敢抬太高。",
               },
             ],
           },
