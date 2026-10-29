@@ -1,6 +1,6 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=27";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=28";
 
-const SAVE_KEY = "kokonoe-haru-save-v27";
+const SAVE_KEY = "kokonoe-haru-save-v28";
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 /** 单框建议字数；超出则按句拆开依次显示 */
@@ -264,7 +264,7 @@ export class GalEngine {
 
   getState() {
     return {
-      version: 27,
+      version: 28,
       chapterIndex: this.chapterIndex,
       sceneIndex: this.sceneIndex,
       intimacy: this.intimacy,
@@ -299,7 +299,7 @@ export class GalEngine {
     }
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(this.getState()));
-      if (toast) this.ui.toast("进度已保存。");
+      if (toast) this.ui.toast("已保存到当前对话位置。");
       return true;
     } catch {
       if (toast) this.ui.toast("保存失败，请检查浏览器存储权限。");
@@ -308,6 +308,7 @@ export class GalEngine {
   }
 
   save() {
+    // 任意对话/选项处都可存；不再拦截「请先完成当前对话」
     return this.persist({ toast: true });
   }
 
