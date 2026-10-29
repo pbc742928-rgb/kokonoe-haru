@@ -115,8 +115,17 @@ button {
 /* Scene variants */
 .scene-home .sky-layer {
   background:
-    radial-gradient(ellipse 50% 40% at 20% 80%, rgba(255, 196, 120, 0.28), transparent 50%),
-    linear-gradient(180deg, #2a3348 0%, #5c4a55 42%, #c48962 100%);
+    #2a3348
+    url("../assets/bg/bg_home.png") center / cover no-repeat;
+}
+
+.scene-home .city-silhouette,
+.scene-home .home-glow {
+  display: none;
+}
+
+.scene-home .light-wash {
+  background: linear-gradient(180deg, transparent 55%, rgba(12, 16, 24, 0.2));
 }
 
 .scene-classroom .sky-layer {
