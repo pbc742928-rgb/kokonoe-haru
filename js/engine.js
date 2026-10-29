@@ -1,4 +1,4 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=29";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=30";
 
 const SLOT_COUNT = 5;
 const SLOTS_KEY = "kokonoe-haru-slots-v29";
@@ -8,7 +8,6 @@ const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 /** 单框建议字数；超出则按句拆开依次显示 */
 const DIALOGUE_CHUNK_MAX = 34;
-const DIALOGUE_FADE_MS = 180;
 
 function buildHonor(name) {
   const n = String(name || "").trim();
@@ -152,9 +151,6 @@ export class GalEngine {
 
     this.resume = defaultResume();
     this.lineQueue = [];
-    this._lineGen = 0;
-    this.fading = false;
-    this._hadDialogue = false;
     this._activeSlot = null;
   }
 
@@ -206,16 +202,12 @@ export class GalEngine {
   }
 
   clearPlayback() {
-    this._lineGen += 1;
     this.stopTyping();
-    this.fading = false;
-    this._hadDialogue = false;
     this._waitingAdvance = false;
     this.awaitingChoice = false;
     this.awaitingName = false;
     this.lineQueue = [];
     this.resume = defaultResume();
-    this.ui.cancelDialogueFade?.();
     this.ui.hideChoices();
     this.ui.closeNamePrompt?.();
     this.ui.setClickHint(false);
@@ -406,11 +398,6 @@ export class GalEngine {
       this.ui.setDialogue(this.fullText);
       this.ui.setClickHint(!this.awaitingChoice && !this.awaitingName);
       this._waitingAdvance = true;
-    }
-    if (this.fading) {
-      this._lineGen += 1;
-      this.fading = false;
-      this.ui.cancelDialogueFade?.();
     }
   }
 
@@ -875,21 +862,6 @@ export class GalEngine {
     }
 
     if (!skipLog) this.pushLog(speaker, text);
-    this.presentLine(speaker, text, { instant });
-  }
-
-  async presentLine(speaker, text, { instant = false } = {}) {
-    const gen = ++this._lineGen;
-    const doFade = !instant && this._hadDialogue && typeof this.ui.fadeDialogueOut === "function";
-
-    if (doFade) {
-      this.fading = true;
-      this.ui.setClickHint(false);
-      await this.ui.fadeDialogueOut(DIALOGUE_FADE_MS);
-      if (gen !== this._lineGen) return;
-      this.fading = false;
-    }
-
     this.ui.setSpeaker(speaker);
     if (instant) {
       this.stopTyping();
@@ -898,25 +870,10 @@ export class GalEngine {
       this.typing = false;
       this._waitingAdvance = true;
       this.ui.setDialogue(text);
-      this.ui.cancelDialogueFade?.();
-      this._hadDialogue = Boolean(text);
       this.ui.setClickHint(true);
       this.autosave();
       return;
     }
-
-    this.ui.setDialogue("");
-    if (doFade || (this._hadDialogue && typeof this.ui.fadeDialogueIn === "function")) {
-      this.fading = true;
-      await this.ui.fadeDialogueIn(DIALOGUE_FADE_MS);
-      if (gen !== this._lineGen) return;
-      this.fading = false;
-    } else {
-      this.ui.cancelDialogueFade?.();
-    }
-
-    if (gen !== this._lineGen) return;
-    this._hadDialogue = Boolean(text);
     this.typeText(text);
     this.autosave();
   }
@@ -995,19 +952,6 @@ export class GalEngine {
 
   advance() {
     if (this.ended || this.awaitingChoice || this.awaitingName) return;
-
-    if (this.fading) {
-      this._lineGen += 1;
-      this.fading = false;
-      this.ui.cancelDialogueFade?.();
-      // 打断淡出后直接进入下一句（或补完当前逻辑）
-      if (!this._waitingAdvance && !this.typing) {
-        const nextIndex = this.resume.lineIndex + 1;
-        this.resume.lineIndex = nextIndex;
-        this.playLineAt(nextIndex, { instant: true });
-      }
-      return;
-    }
 
     if (this.typing) {
       this.stopTyping();

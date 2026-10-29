@@ -1,4 +1,4 @@
-import { GalEngine } from "./engine.js?v=29";
+import { GalEngine } from "./engine.js?v=30";
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,7 +22,6 @@ const ui = {
   _nameConfirm: null,
   spriteImg: $("sprite-img"),
   speaker: $("speaker"),
-  dialogueFade: $("dialogue-fade"),
   spriteMap: {
     neutral: "assets/sprites/haru_neutral.png",
     shy: "assets/sprites/haru_shy.png",
@@ -41,7 +40,6 @@ const ui = {
   btnContinue: $("btn-continue"),
   btnTitleLoad: $("btn-title-load"),
   _saveMode: "save",
-  _fadeTimer: null,
 
   showTitle() {
     this.title.classList.remove("hidden");
@@ -108,45 +106,6 @@ const ui = {
 
   setClickHint(on) {
     this.hint.classList.toggle("visible", Boolean(on));
-  },
-
-  fadeDialogueOut(ms = 180) {
-    return this._runDialogueFade(true, ms);
-  },
-
-  fadeDialogueIn(ms = 180) {
-    return this._runDialogueFade(false, ms);
-  },
-
-  cancelDialogueFade() {
-    if (this._fadeTimer) {
-      clearTimeout(this._fadeTimer);
-      this._fadeTimer = null;
-    }
-    this.dialogueFade?.classList.remove("is-out");
-  },
-
-  _runDialogueFade(toOut, ms) {
-    const el = this.dialogueFade;
-    if (!el) return Promise.resolve();
-    if (this._fadeTimer) {
-      clearTimeout(this._fadeTimer);
-      this._fadeTimer = null;
-    }
-    return new Promise((resolve) => {
-      if (toOut) {
-        el.classList.add("is-out");
-      } else {
-        el.classList.add("is-out");
-        void el.offsetWidth;
-        el.classList.remove("is-out");
-      }
-      const done = () => {
-        this._fadeTimer = null;
-        resolve();
-      };
-      this._fadeTimer = window.setTimeout(done, ms + 20);
-    });
   },
 
   setStatus({ chapterLabel, timeLabel, intimacy, tier, safety, bump }) {
