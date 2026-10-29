@@ -1,4 +1,4 @@
-import { GalEngine } from "./engine.js?v=28";
+import { GalEngine } from "./engine.js?v=29";
 
 const $ = (id) => document.getElementById(id);
 
@@ -8,6 +8,11 @@ const ui = {
   game: $("game-ui"),
   ending: $("ending-screen"),
   menu: $("menu-screen"),
+  saveScreen: $("save-screen"),
+  savePanelTitle: $("save-panel-title"),
+  savePanelHint: $("save-panel-hint"),
+  saveSlotList: $("save-slot-list"),
+  saveToast: $("save-toast"),
   logScreen: $("log-screen"),
   logList: $("log-list"),
   nameScreen: $("name-screen"),
@@ -17,6 +22,7 @@ const ui = {
   _nameConfirm: null,
   spriteImg: $("sprite-img"),
   speaker: $("speaker"),
+  dialogueFade: $("dialogue-fade"),
   spriteMap: {
     neutral: "assets/sprites/haru_neutral.png",
     shy: "assets/sprites/haru_shy.png",
@@ -33,22 +39,29 @@ const ui = {
   endingText: $("ending-text"),
   toastEl: $("menu-toast"),
   btnContinue: $("btn-continue"),
+  btnTitleLoad: $("btn-title-load"),
+  _saveMode: "save",
+  _fadeTimer: null,
 
   showTitle() {
     this.title.classList.remove("hidden");
     this.game.classList.add("hidden");
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
+    this.closeSaveSlots();
     this.closeLog();
     this.closeNamePrompt();
     this.setSpriteVisible(false);
-    this.btnContinue.classList.toggle("hidden", !engine.hasSave());
+    const has = engine.hasSave();
+    this.btnContinue.classList.toggle("hidden", !has);
+    this.btnTitleLoad?.classList.toggle("hidden", !has);
   },
 
   showGame() {
     this.title.classList.add("hidden");
     this.ending.classList.add("hidden");
     this.menu.classList.add("hidden");
+    this.closeSaveSlots();
     this.closeLog();
     this.closeNamePrompt();
     this.game.classList.remove("hidden");
@@ -97,6 +110,45 @@ const ui = {
     this.hint.classList.toggle("visible", Boolean(on));
   },
 
+  fadeDialogueOut(ms = 180) {
+    return this._runDialogueFade(true, ms);
+  },
+
+  fadeDialogueIn(ms = 180) {
+    return this._runDialogueFade(false, ms);
+  },
+
+  cancelDialogueFade() {
+    if (this._fadeTimer) {
+      clearTimeout(this._fadeTimer);
+      this._fadeTimer = null;
+    }
+    this.dialogueFade?.classList.remove("is-out");
+  },
+
+  _runDialogueFade(toOut, ms) {
+    const el = this.dialogueFade;
+    if (!el) return Promise.resolve();
+    if (this._fadeTimer) {
+      clearTimeout(this._fadeTimer);
+      this._fadeTimer = null;
+    }
+    return new Promise((resolve) => {
+      if (toOut) {
+        el.classList.add("is-out");
+      } else {
+        el.classList.add("is-out");
+        void el.offsetWidth;
+        el.classList.remove("is-out");
+      }
+      const done = () => {
+        this._fadeTimer = null;
+        resolve();
+      };
+      this._fadeTimer = window.setTimeout(done, ms + 20);
+    });
+  },
+
   setStatus({ chapterLabel, timeLabel, intimacy, tier, safety, bump }) {
     this.chapterPill.textContent = chapterLabel || "—";
     this.timePill.textContent = timeLabel || "";
@@ -135,6 +187,7 @@ const ui = {
   showEnding(ending) {
     this.game.classList.add("hidden");
     this.menu.classList.add("hidden");
+    this.closeSaveSlots();
     this.ending.classList.remove("hidden");
     this.endingTitle.textContent = ending.title;
     this.endingText.textContent = ending.text;
@@ -146,6 +199,7 @@ const ui = {
 
   openMenu() {
     this.closeLog();
+    this.closeSaveSlots();
     this.toastEl.textContent = "";
     this.menu.classList.remove("hidden");
   },
@@ -155,8 +209,109 @@ const ui = {
     this.toastEl.textContent = "";
   },
 
+  openSaveSlots({ mode = "save", slots = [], hint = "" } = {}) {
+    this.closeMenu();
+    this.closeLog();
+    this._saveMode = mode;
+    this.savePanelTitle.textContent = mode === "load" ? "读取进度" : "保存进度";
+    this.savePanelHint.textContent = hint || "";
+    this.saveToast.textContent = "";
+    this.saveSlotList.innerHTML = "";
+
+    slots.forEach((slot) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "save-slot" + (slot.empty ? " is-empty" : "");
+      btn.setAttribute("role", "listitem");
+
+      const idx = document.createElement("span");
+      idx.className = "save-slot-index";
+      idx.textContent = String(slot.index + 1);
+
+      const main = document.createElement("div");
+      main.className = "save-slot-main";
+
+      const title = document.createElement("p");
+      title.className = "save-slot-title";
+      title.textContent = slot.empty
+        ? mode === "load"
+          ? "空槽"
+          : "空槽 · 点击写入"
+        : slot.chapterLabel || "存档";
+
+      const meta = document.createElement("p");
+      meta.className = "save-slot-meta";
+      if (slot.empty) {
+        meta.textContent = mode === "save" ? "尚无数据" : "不可读取";
+      } else {
+        const bits = [slot.timeLabel, slot.savedAtLabel, slot.intimacy != null ? `亲密 ${slot.intimacy}` : ""]
+          .filter(Boolean)
+          .join(" · ");
+        meta.textContent = bits || "已保存";
+      }
+
+      const preview = document.createElement("p");
+      preview.className = "save-slot-preview";
+      preview.textContent = slot.empty ? "—" : slot.preview || "……";
+
+      main.appendChild(title);
+      main.appendChild(meta);
+      main.appendChild(preview);
+      btn.appendChild(idx);
+      btn.appendChild(main);
+
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        if (this._saveMode === "save") {
+          if (!slot.empty) {
+            const ok = window.confirm(`覆盖槽位 ${slot.index + 1} 的存档？`);
+            if (!ok) return;
+          }
+          const saved = engine.saveToSlot(slot.index, { toast: false });
+          if (saved) {
+            this.saveToast.textContent = `已保存到槽位 ${slot.index + 1}。`;
+            this.renderSaveSlots(engine.listSlots());
+            window.setTimeout(() => this.closeSaveSlots(), 480);
+          } else {
+            this.saveToast.textContent = "保存失败。";
+          }
+          return;
+        }
+
+        if (slot.empty) {
+          this.saveToast.textContent = "该槽位没有存档。";
+          return;
+        }
+        await engine.loadFromSlot(slot.index);
+      });
+
+      this.saveSlotList.appendChild(btn);
+    });
+
+    this.saveScreen.classList.remove("hidden");
+  },
+
+  renderSaveSlots(slots) {
+    if (this.saveScreen.classList.contains("hidden")) return;
+    this.openSaveSlots({
+      mode: this._saveMode,
+      slots,
+      hint: this.savePanelHint.textContent,
+    });
+  },
+
+  closeSaveSlots() {
+    this.saveScreen?.classList.add("hidden");
+    if (this.saveToast) this.saveToast.textContent = "";
+  },
+
+  isSaveSlotsOpen() {
+    return this.saveScreen && !this.saveScreen.classList.contains("hidden");
+  },
+
   openLog(entries = []) {
     this.closeMenu();
+    this.closeSaveSlots();
     this.logList.innerHTML = "";
     if (!entries.length) {
       const empty = document.createElement("p");
@@ -195,6 +350,7 @@ const ui = {
   openNamePrompt({ defaultValue = "尘", onConfirm } = {}) {
     this.closeMenu();
     this.closeLog();
+    this.closeSaveSlots();
     this._nameConfirm = onConfirm;
     this.nameError.textContent = "";
     this.nameInput.value = defaultValue || "尘";
@@ -232,6 +388,10 @@ const ui = {
   },
 
   toast(msg) {
+    if (this.isSaveSlotsOpen() && this.saveToast) {
+      this.saveToast.textContent = msg;
+      return;
+    }
     this.toastEl.textContent = msg;
   },
 };
@@ -267,7 +427,9 @@ function bind() {
   $("btn-start").addEventListener("click", () => engine.start());
   $("btn-continue").addEventListener("click", async () => {
     await engine.load();
-    ui.closeMenu();
+  });
+  $("btn-title-load")?.addEventListener("click", () => {
+    engine.requestLoadPanel({ fromTitle: true });
   });
   renderTestNodes();
   $("btn-restart").addEventListener("click", () => engine.start());
@@ -283,10 +445,12 @@ function bind() {
   });
   $("btn-close-menu").addEventListener("click", () => ui.closeMenu());
   $("btn-close-log").addEventListener("click", () => ui.closeLog());
-  $("btn-save").addEventListener("click", () => engine.save());
-  $("btn-load").addEventListener("click", async () => {
-    await engine.load();
-    ui.closeMenu();
+  $("btn-close-save")?.addEventListener("click", () => ui.closeSaveSlots());
+  $("btn-save").addEventListener("click", () => {
+    engine.requestSavePanel();
+  });
+  $("btn-load").addEventListener("click", () => {
+    engine.requestLoadPanel();
   });
   $("btn-to-title").addEventListener("click", () => {
     engine.autosave();
@@ -307,12 +471,15 @@ function bind() {
   });
 
   $("dialogue-box").addEventListener("click", () => {
-    if (ui.isLogOpen() || ui.isNamePromptOpen()) return;
+    if (ui.isLogOpen() || ui.isNamePromptOpen() || ui.isSaveSlotsOpen()) return;
     engine.advance();
   });
 
   $("log-screen").addEventListener("click", (e) => {
     if (e.target === $("log-screen")) ui.closeLog();
+  });
+  $("save-screen")?.addEventListener("click", (e) => {
+    if (e.target === $("save-screen")) ui.closeSaveSlots();
   });
 
   window.addEventListener("keydown", (e) => {
@@ -321,6 +488,10 @@ function bind() {
       return;
     }
     if (e.key === "Escape") {
+      if (ui.isSaveSlotsOpen()) {
+        ui.closeSaveSlots();
+        return;
+      }
       if (ui.isLogOpen()) {
         ui.closeLog();
         return;
@@ -332,6 +503,7 @@ function bind() {
     if (e.key === " " || e.key === "Enter") {
       if (!ui.title.classList.contains("hidden")) return;
       if (!ui.menu.classList.contains("hidden")) return;
+      if (ui.isSaveSlotsOpen()) return;
       if (ui.isLogOpen()) return;
       if (!ui.ending.classList.contains("hidden")) return;
       e.preventDefault();

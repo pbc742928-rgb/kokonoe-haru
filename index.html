@@ -12,7 +12,7 @@
     />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
-    <link rel="stylesheet" href="css/style.css?v=28" />
+    <link rel="stylesheet" href="css/style.css?v=29" />
   </head>
   <body>
     <div id="app">
@@ -43,6 +43,7 @@
             <div class="title-actions">
               <button type="button" id="btn-start" class="btn primary">开始游戏</button>
               <button type="button" id="btn-continue" class="btn ghost hidden">继续</button>
+              <button type="button" id="btn-title-load" class="btn ghost hidden">读档</button>
             </div>
             <div class="test-nodes" aria-label="剧情测试节点">
               <p class="test-nodes-label">剧情节点（测试用）</p>
@@ -72,8 +73,10 @@
           </div>
 
           <div id="dialogue-box" class="dialogue-box">
-            <div id="speaker" class="speaker"></div>
-            <p id="dialogue-text" class="dialogue-text"></p>
+            <div id="dialogue-fade" class="dialogue-fade">
+              <div id="speaker" class="speaker"></div>
+              <p id="dialogue-text" class="dialogue-text"></p>
+            </div>
             <span id="click-hint" class="click-hint" aria-hidden="true">▼</span>
           </div>
 
@@ -95,12 +98,24 @@
         <section id="menu-screen" class="overlay-screen dim hidden">
           <div class="menu-panel">
             <h3>菜单</h3>
-            <p class="menu-hint">可随时保存（含对话中）。推进时也会自动写入；关闭后用标题「继续」读取。</p>
-            <button type="button" id="btn-save" class="btn block">随时保存进度</button>
+            <p class="menu-hint">共 5 个存档槽。可随时保存；推进时另有自动备份。关闭后用「继续」或「读档」。</p>
+            <button type="button" id="btn-save" class="btn block">保存进度</button>
             <button type="button" id="btn-load" class="btn block">读取进度</button>
             <button type="button" id="btn-to-title" class="btn block ghost">返回标题</button>
             <button type="button" id="btn-close-menu" class="btn block ghost">关闭</button>
             <p id="menu-toast" class="menu-toast" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section id="save-screen" class="overlay-screen dim hidden">
+          <div class="save-panel">
+            <div class="save-header">
+              <h3 id="save-panel-title">保存进度</h3>
+              <button type="button" id="btn-close-save" class="btn tiny ghost">关闭</button>
+            </div>
+            <p id="save-panel-hint" class="save-hint"></p>
+            <div id="save-slot-list" class="save-slot-list" role="list"></div>
+            <p id="save-toast" class="menu-toast" aria-live="polite"></p>
           </div>
         </section>
 
@@ -135,6 +150,6 @@
       </div>
     </div>
 
-    <script type="module" src="js/main.js?v=28"></script>
+    <script type="module" src="js/main.js?v=29"></script>
   </body>
 </html>

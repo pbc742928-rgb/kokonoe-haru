@@ -493,6 +493,15 @@ button {
   animation: dialogue-in 0.35s ease both;
 }
 
+.dialogue-fade {
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+
+.dialogue-fade.is-out {
+  opacity: 0;
+}
+
 .speaker {
   position: relative;
   display: flex;
@@ -607,6 +616,109 @@ button {
   font-size: 0.85rem;
   opacity: 0.75;
   text-align: center;
+}
+
+.save-panel {
+  width: min(560px, 94%);
+  max-height: min(78vh, 640px);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px 16px;
+  border-radius: 16px;
+  background: rgba(22, 28, 38, 0.94);
+  border: 1px solid rgba(243, 235, 224, 0.12);
+}
+
+.save-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.save-header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.save-hint {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  opacity: 0.72;
+}
+
+.save-slot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.save-slot {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 10px 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(243, 235, 224, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.save-slot:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(243, 235, 224, 0.28);
+}
+
+.save-slot.is-empty {
+  opacity: 0.78;
+}
+
+.save-slot-index {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  opacity: 0.85;
+}
+
+.save-slot-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.save-slot-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.save-slot-meta {
+  margin: 0;
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.save-slot-preview {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  opacity: 0.82;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .log-panel {

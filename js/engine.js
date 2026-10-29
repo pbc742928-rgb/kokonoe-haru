@@ -1,10 +1,14 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=28";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=29";
 
-const SAVE_KEY = "kokonoe-haru-save-v28";
+const SLOT_COUNT = 5;
+const SLOTS_KEY = "kokonoe-haru-slots-v29";
+const AUTOSAVE_KEY = "kokonoe-haru-auto-v29";
+const LEGACY_SAVE_KEYS = ["kokonoe-haru-save-v28", "kokonoe-haru-save-v27", "kokonoe-haru-save-v26"];
 const LOG_LIMIT = 100;
 const DEFAULT_PLAYER_NAME = "尘";
 /** 单框建议字数；超出则按句拆开依次显示 */
 const DIALOGUE_CHUNK_MAX = 34;
+const DIALOGUE_FADE_MS = 180;
 
 function buildHonor(name) {
   const n = String(name || "").trim();
@@ -148,6 +152,10 @@ export class GalEngine {
 
     this.resume = defaultResume();
     this.lineQueue = [];
+    this._lineGen = 0;
+    this.fading = false;
+    this._hadDialogue = false;
+    this._activeSlot = null;
   }
 
   setPlayerName(raw) {
@@ -198,12 +206,16 @@ export class GalEngine {
   }
 
   clearPlayback() {
+    this._lineGen += 1;
     this.stopTyping();
+    this.fading = false;
+    this._hadDialogue = false;
     this._waitingAdvance = false;
     this.awaitingChoice = false;
     this.awaitingName = false;
     this.lineQueue = [];
     this.resume = defaultResume();
+    this.ui.cancelDialogueFade?.();
     this.ui.hideChoices();
     this.ui.closeNamePrompt?.();
     this.ui.setClickHint(false);
@@ -211,6 +223,7 @@ export class GalEngine {
 
   reset() {
     this.clearPlayback();
+    this._activeSlot = null;
     this.chapterIndex = 0;
     this.sceneIndex = 0;
     this.intimacy = 0;
@@ -223,6 +236,7 @@ export class GalEngine {
     this.playerHonor = buildHonor(DEFAULT_PLAYER_NAME);
     this.ui.hideEnding();
     this.ui.closeLog?.();
+    this.ui.closeSaveSlots?.();
     this.syncHud(false);
   }
 
@@ -264,7 +278,7 @@ export class GalEngine {
 
   getState() {
     return {
-      version: 28,
+      version: 29,
       chapterIndex: this.chapterIndex,
       sceneIndex: this.sceneIndex,
       intimacy: this.intimacy,
@@ -282,24 +296,145 @@ export class GalEngine {
     };
   }
 
-  persist({ toast = false } = {}) {
-    if (this.ended) {
-      if (toast) this.ui.toast("结局画面无法保存，请重新开始。");
-      return false;
+  buildSaveMeta(state) {
+    const ch = CHAPTERS[state.chapterIndex];
+    const lastLog = [...(state.log || [])].reverse().find((e) => e?.text);
+    return {
+      chapterLabel: ch?.label || "—",
+      timeLabel: ch?.timeLabel || "",
+      preview: String(lastLog?.text || "……").slice(0, 40),
+      intimacy: state.intimacy,
+      safety: state.safety,
+    };
+  }
+
+  readSlotStore() {
+    try {
+      const raw = localStorage.getItem(SLOTS_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        const slots = Array.from({ length: SLOT_COUNT }, (_, i) => data.slots?.[i] ?? null);
+        return {
+          slots,
+          lastSlot:
+            data.lastSlot === null || data.lastSlot === undefined ? null : Number(data.lastSlot),
+        };
+      }
+    } catch {
+      /* ignore */
     }
+    return { slots: Array.from({ length: SLOT_COUNT }, () => null), lastSlot: null };
+  }
+
+  writeSlotStore(store) {
+    localStorage.setItem(
+      SLOTS_KEY,
+      JSON.stringify({
+        slots: Array.from({ length: SLOT_COUNT }, (_, i) => store.slots?.[i] ?? null),
+        lastSlot: store.lastSlot ?? null,
+      })
+    );
+  }
+
+  migrateLegacySaves() {
+    const store = this.readSlotStore();
+    if (store.slots.some(Boolean)) return store;
+    for (const key of LEGACY_SAVE_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      try {
+        const state = JSON.parse(raw);
+        if (!state || typeof state !== "object") continue;
+        store.slots[0] = {
+          savedAt: Date.now(),
+          meta: this.buildSaveMeta({
+            ...state,
+            log: Array.isArray(state.log) ? state.log : [],
+          }),
+          state,
+        };
+        store.lastSlot = 0;
+        this.writeSlotStore(store);
+        break;
+      } catch {
+        /* ignore */
+      }
+    }
+    return store;
+  }
+
+  formatSavedAt(ts) {
+    if (!ts) return "";
+    try {
+      return new Date(ts).toLocaleString("zh-CN", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return "";
+    }
+  }
+
+  listSlots() {
+    const store = this.migrateLegacySaves();
+    return store.slots.map((slot, index) => ({
+      index,
+      empty: !slot,
+      savedAt: slot?.savedAt || null,
+      savedAtLabel: this.formatSavedAt(slot?.savedAt),
+      chapterLabel: slot?.meta?.chapterLabel || "",
+      timeLabel: slot?.meta?.timeLabel || "",
+      preview: slot?.meta?.preview || "",
+      intimacy: slot?.meta?.intimacy,
+      safety: slot?.meta?.safety,
+    }));
+  }
+
+  canCaptureProgress() {
+    if (this.ended) return { ok: false, reason: "结局画面无法保存，请重新开始。" };
     if (this.resume.mode === "idle" && this.phase === "idle") {
-      if (toast) this.ui.toast("当前没有可保存的进度。");
-      return false;
+      return { ok: false, reason: "当前没有可保存的进度。" };
     }
+    return { ok: true };
+  }
+
+  freezeForSave() {
     if (this.typing) {
       this.stopTyping();
       this.ui.setDialogue(this.fullText);
       this.ui.setClickHint(!this.awaitingChoice && !this.awaitingName);
       this._waitingAdvance = true;
     }
+    if (this.fading) {
+      this._lineGen += 1;
+      this.fading = false;
+      this.ui.cancelDialogueFade?.();
+    }
+  }
+
+  saveToSlot(index, { toast = true } = {}) {
+    const check = this.canCaptureProgress();
+    if (!check.ok) {
+      if (toast) this.ui.toast(check.reason);
+      return false;
+    }
+    const slotIndex = clamp(Number(index) || 0, 0, SLOT_COUNT - 1);
+    this.freezeForSave();
     try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(this.getState()));
-      if (toast) this.ui.toast("已保存到当前对话位置。");
+      const state = this.getState();
+      const store = this.readSlotStore();
+      store.slots[slotIndex] = {
+        savedAt: Date.now(),
+        meta: this.buildSaveMeta(state),
+        state,
+      };
+      store.lastSlot = slotIndex;
+      this.writeSlotStore(store);
+      this._activeSlot = slotIndex;
+      this.writeAutosave(false);
+      if (toast) this.ui.toast(`已保存到槽位 ${slotIndex + 1}。`);
       return true;
     } catch {
       if (toast) this.ui.toast("保存失败，请检查浏览器存储权限。");
@@ -307,28 +442,124 @@ export class GalEngine {
     }
   }
 
-  save() {
-    // 任意对话/选项处都可存；不再拦截「请先完成当前对话」
-    return this.persist({ toast: true });
+  writeAutosave(toast = false) {
+    const check = this.canCaptureProgress();
+    if (!check.ok) return false;
+    this.freezeForSave();
+    try {
+      const state = this.getState();
+      localStorage.setItem(
+        AUTOSAVE_KEY,
+        JSON.stringify({
+          savedAt: Date.now(),
+          meta: this.buildSaveMeta(state),
+          state,
+          slotHint: this._activeSlot,
+        })
+      );
+      if (toast) this.ui.toast("已自动保存。");
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   autosave() {
     if (this.ended || this.resume.mode === "idle") return false;
-    return this.persist({ toast: false });
+    return this.writeAutosave(false);
   }
 
-  hasSave() {
-    return Boolean(localStorage.getItem(SAVE_KEY));
+  /** 菜单「保存」：交给 UI 打开五槽面板 */
+  requestSavePanel() {
+    const check = this.canCaptureProgress();
+    if (!check.ok) {
+      this.ui.toast(check.reason);
+      return false;
+    }
+    this.ui.openSaveSlots?.({
+      mode: "save",
+      slots: this.listSlots(),
+      hint: "点空槽写入；点已有槽位将覆盖该存档。",
+    });
+    return true;
   }
 
-  async load() {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) {
+  requestLoadPanel({ fromTitle = false } = {}) {
+    const slots = this.listSlots();
+    if (!slots.some((s) => !s.empty) && !this.readAutosaveEntry()) {
       this.ui.toast("没有可读取的进度。");
       return false;
     }
+    this.ui.openSaveSlots?.({
+      mode: "load",
+      slots,
+      fromTitle,
+      hint: "选择一个存档读取。",
+    });
+    return true;
+  }
+
+  readAutosaveEntry() {
     try {
+      const raw = localStorage.getItem(AUTOSAVE_KEY);
+      if (!raw) return null;
       const data = JSON.parse(raw);
+      if (!data?.state) return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  hasSave() {
+    this.migrateLegacySaves();
+    if (this.listSlots().some((s) => !s.empty)) return true;
+    return Boolean(this.readAutosaveEntry());
+  }
+
+  findLatestEntry() {
+    this.migrateLegacySaves();
+    const candidates = [];
+    const store = this.readSlotStore();
+    store.slots.forEach((slot, index) => {
+      if (slot?.state) {
+        candidates.push({ kind: "slot", index, savedAt: slot.savedAt || 0, entry: slot });
+      }
+    });
+    const auto = this.readAutosaveEntry();
+    if (auto?.state) {
+      candidates.push({ kind: "auto", index: null, savedAt: auto.savedAt || 0, entry: auto });
+    }
+    if (!candidates.length) return null;
+    candidates.sort((a, b) => b.savedAt - a.savedAt);
+    return candidates[0];
+  }
+
+  async load() {
+    const latest = this.findLatestEntry();
+    if (!latest) {
+      this.ui.toast("没有可读取的进度。");
+      return false;
+    }
+    if (latest.kind === "slot") return this.loadFromSlot(latest.index);
+    return this.applyLoadedState(latest.entry.state, { toast: "已读取最近进度。" });
+  }
+
+  async loadFromSlot(index) {
+    const store = this.readSlotStore();
+    const slot = store.slots[clamp(Number(index) || 0, 0, SLOT_COUNT - 1)];
+    if (!slot?.state) {
+      this.ui.toast("该槽位没有存档。");
+      return false;
+    }
+    this._activeSlot = clamp(Number(index) || 0, 0, SLOT_COUNT - 1);
+    store.lastSlot = this._activeSlot;
+    this.writeSlotStore(store);
+    return this.applyLoadedState(slot.state, { toast: `已读取槽位 ${this._activeSlot + 1}。` });
+  }
+
+  async applyLoadedState(data, { toast = "进度已读取。" } = {}) {
+    try {
       this.clearPlayback();
       this.ended = false;
       this.chapterIndex = clamp(Number(data.chapterIndex) || 0, 0, Math.max(CHAPTERS.length - 1, 0));
@@ -351,9 +582,11 @@ export class GalEngine {
       const resume = data.resume && typeof data.resume === "object" ? data.resume : null;
       this.ui.hideEnding();
       this.ui.closeLog?.();
+      this.ui.closeSaveSlots?.();
+      this.ui.closeMenu?.();
       this.ui.showGame();
       this.syncHud(false);
-      this.ui.toast("进度已读取。");
+      if (toast) this.ui.toast(toast);
 
       if (resume && resume.mode && resume.mode !== "idle") {
         this.resume = {
@@ -366,7 +599,6 @@ export class GalEngine {
         };
         this.restoreFromResume();
       } else {
-        // 旧档：仅有章节/场景，从该场景开头播
         this.playCurrentScene();
       }
       return true;
@@ -643,6 +875,21 @@ export class GalEngine {
     }
 
     if (!skipLog) this.pushLog(speaker, text);
+    this.presentLine(speaker, text, { instant });
+  }
+
+  async presentLine(speaker, text, { instant = false } = {}) {
+    const gen = ++this._lineGen;
+    const doFade = !instant && this._hadDialogue && typeof this.ui.fadeDialogueOut === "function";
+
+    if (doFade) {
+      this.fading = true;
+      this.ui.setClickHint(false);
+      await this.ui.fadeDialogueOut(DIALOGUE_FADE_MS);
+      if (gen !== this._lineGen) return;
+      this.fading = false;
+    }
+
     this.ui.setSpeaker(speaker);
     if (instant) {
       this.stopTyping();
@@ -651,10 +898,25 @@ export class GalEngine {
       this.typing = false;
       this._waitingAdvance = true;
       this.ui.setDialogue(text);
+      this.ui.cancelDialogueFade?.();
+      this._hadDialogue = Boolean(text);
       this.ui.setClickHint(true);
       this.autosave();
       return;
     }
+
+    this.ui.setDialogue("");
+    if (doFade || (this._hadDialogue && typeof this.ui.fadeDialogueIn === "function")) {
+      this.fading = true;
+      await this.ui.fadeDialogueIn(DIALOGUE_FADE_MS);
+      if (gen !== this._lineGen) return;
+      this.fading = false;
+    } else {
+      this.ui.cancelDialogueFade?.();
+    }
+
+    if (gen !== this._lineGen) return;
+    this._hadDialogue = Boolean(text);
     this.typeText(text);
     this.autosave();
   }
@@ -733,6 +995,19 @@ export class GalEngine {
 
   advance() {
     if (this.ended || this.awaitingChoice || this.awaitingName) return;
+
+    if (this.fading) {
+      this._lineGen += 1;
+      this.fading = false;
+      this.ui.cancelDialogueFade?.();
+      // 打断淡出后直接进入下一句（或补完当前逻辑）
+      if (!this._waitingAdvance && !this.typing) {
+        const nextIndex = this.resume.lineIndex + 1;
+        this.resume.lineIndex = nextIndex;
+        this.playLineAt(nextIndex, { instant: true });
+      }
+      return;
+    }
 
     if (this.typing) {
       this.stopTyping();
