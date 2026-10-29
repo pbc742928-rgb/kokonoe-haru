@@ -1,4 +1,4 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=30";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=31";
 
 const SLOT_COUNT = 5;
 const SLOTS_KEY = "kokonoe-haru-slots-v29";
@@ -392,15 +392,6 @@ export class GalEngine {
     return { ok: true };
   }
 
-  freezeForSave() {
-    if (this.typing) {
-      this.stopTyping();
-      this.ui.setDialogue(this.fullText);
-      this.ui.setClickHint(!this.awaitingChoice && !this.awaitingName);
-      this._waitingAdvance = true;
-    }
-  }
-
   saveToSlot(index, { toast = true } = {}) {
     const check = this.canCaptureProgress();
     if (!check.ok) {
@@ -408,7 +399,6 @@ export class GalEngine {
       return false;
     }
     const slotIndex = clamp(Number(index) || 0, 0, SLOT_COUNT - 1);
-    this.freezeForSave();
     try {
       const state = this.getState();
       const store = this.readSlotStore();
@@ -432,7 +422,6 @@ export class GalEngine {
   writeAutosave(toast = false) {
     const check = this.canCaptureProgress();
     if (!check.ok) return false;
-    this.freezeForSave();
     try {
       const state = this.getState();
       localStorage.setItem(
