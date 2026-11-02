@@ -2208,10 +2208,6 @@ export const CHAPTERS = [
             "text": "窗外有车经过。你咽下嘴里的饭，盘子已经空了一半。"
           },
           {
-            "speaker": "",
-            "text": "春问："
-          },
-          {
             "speaker": "九重春",
             "text": "够吗？"
           },
