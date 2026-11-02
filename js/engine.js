@@ -1,4 +1,4 @@
-import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=36";
+import { CHAPTERS, TEST_NODES, resolveCampaignEnding } from "./story.js?v=37";
 
 const SLOT_COUNT = 5;
 const SLOTS_KEY = "kokonoe-haru-slots-v29";
