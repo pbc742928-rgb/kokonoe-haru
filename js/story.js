@@ -1435,6 +1435,7 @@ export const CHAPTERS = [
         "mood": "neutral",
         "showSprite": true,
         "lines": [
+          { "speaker": "", "text": "……" },
           {
             "speaker": "",
             "text": "某天你加班稍晚，提着烤串和啤酒回家。"
