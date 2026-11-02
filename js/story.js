@@ -3696,60 +3696,6 @@ export const CHAPTERS = [
         ],
       },
       {
-        id: "month_shoulder",
-        scene: "home",
-        mood: "shy",
-        showSprite: true,
-        lines: [
-          {
-            speaker: "",
-            text: "晚饭时你揉肩太明显。电视里正播着没人认真看的天气预报，厨房挂钟走得比主持人的语速更响。她放下筷子，视线在你的手和左肩之间来回两次，停了很久。",
-          },
-          {
-            speaker: "九重春",
-            text: "肩膀。左边。要不要热敷。我查过步骤。毛巾拧好了。",
-          },
-          {
-            speaker: "",
-            text: "托盘端上来。关心被做成说明。她手很稳，眼神却飘向你耳后——仍不敢对焦太久。",
-          },
-        ],
-        choices: [
-          {
-            text: "偏过身子，把左肩留到她够得着的高度",
-            intimacy: 6,
-            safety: 2,
-            flags: ["her_care_active"],
-            reply: [
-              {
-                speaker: "",
-                text: "热毛巾贴上来。她站在你侧后方，娇小的影子落在墙上，和你的肩叠在一起。她呼吸乱了半拍，手掌却没有移开。",
-              },
-              {
-                speaker: "九重春",
-                text: "别说话。我……也别说话。说话会让这事变得很奇怪。",
-              },
-            ],
-          },
-          {
-            text: "自己接过毛巾，按她的计时老实坐着",
-            intimacy: 4,
-            safety: 1,
-            flags: ["her_care_active"],
-            reply: [
-              {
-                speaker: "九重春",
-                text: "别跳过步骤。",
-              },
-              {
-                speaker: "",
-                text: "她假装看书，眼睛却抬了两次。",
-              },
-            ],
-          },
-        ],
-      },
-      {
         id: "month_key",
         scene: "home",
         mood: "neutral",
