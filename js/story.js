@@ -1054,7 +1054,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "你打开门时，她仍穿着早上的西装，手里却多了牙刷、毛巾和一只最便宜的塑料杯，装在便利店的袋子里。她说：「打扰了，尘先生。」没有说「我回来了」。你也没有纠正，只侧过身让她进门。",
+            text: "你打开门时，她仍穿着早上的西装，手里却多了牙刷、毛巾和一只最便宜的塑料杯，装在便利店的袋子里。她说：「打扰了，{honor}。」没有说「我回来了」。你也没有纠正，只侧过身让她进门。",
           },
           {
             speaker: "",
@@ -3583,7 +3583,7 @@ export const CHAPTERS = [
             text: "这天回家，你打开冰箱，里面多了一盒常喝的咖啡，却没找到自己前两天写在清单上的速冻披萨。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "披萨呢？",
           },
           {
@@ -3591,7 +3591,7 @@ export const CHAPTERS = [
             text: "没买。冰箱里还有饭。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "那是两回事吧。",
           },
           {
@@ -3603,7 +3603,7 @@ export const CHAPTERS = [
             text: "披萨更贵，也没有饭好吃。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "你怎么知道我觉得哪个更好吃？",
           },
           {
@@ -3615,7 +3615,7 @@ export const CHAPTERS = [
             text: "你一时没接上话。她已经低下头，把袋子里的东西一件件放好，仿佛刚才只是在陈述一件再普通不过的事。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "那咖啡怎么回事？这个牌子原来那家店没有吧。",
           },
           {
@@ -3623,7 +3623,7 @@ export const CHAPTERS = [
             text: "另一家店便宜三块。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "那家店又不顺路。",
           },
           {
@@ -3639,7 +3639,7 @@ export const CHAPTERS = [
             text: "其实并不顺路。你没有拆穿，只伸手取下冰箱门上的清单。披萨那一行已经被她划掉，旁边用很小的字写着「有剩饭」。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "所以我的披萨被你换成咖啡了？",
           },
           {
@@ -3647,7 +3647,7 @@ export const CHAPTERS = [
             text: "不能这么算。咖啡是会喝的。披萨可以不吃。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "你现在都替我决定吃什么了？",
           },
           {
@@ -3667,7 +3667,7 @@ export const CHAPTERS = [
             flags: ["her_care_active"],
             reply: [
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "我又没说不行。披萨先留在清单上，今天吃剩饭。",
               },
               {
@@ -3679,7 +3679,7 @@ export const CHAPTERS = [
                 text: "我可以炒一下。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "你不是刚回来？我来。你把东西收完。",
               },
               {
@@ -3695,7 +3695,7 @@ export const CHAPTERS = [
             flags: ["her_care_active"],
             reply: [
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "下次再买。今天先吃剩饭。",
               },
               {
@@ -3703,7 +3703,7 @@ export const CHAPTERS = [
                 text: "下次也不一定放得下。",
               },
               {
-                speaker: "你",
+                speaker: "{name}",
                 text: "九重春。你是不是就是不想让我买？",
               },
               {
@@ -3742,11 +3742,11 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "不得不承认，即使工作本身没什么值得期待，发薪日还是会让人稍微高兴一点。至少账户里的数字变得好看了一些，也终于可以还尘先生的账了。",
+            text: "不得不承认，即使工作本身没什么值得期待，发薪日还是会让人稍微高兴一点。至少账户里的数字变得好看了一些，也终于可以还{honor}的账了。",
           },
           {
             speaker: "",
-            text: "她打开备忘录，找到那张记了一个月的账单。生活用品、饭钱、交通费，还有被尘先生划掉过一次、又被她默默加回去的水电。现在，这些终于可以一点点归还。",
+            text: "她打开备忘录，找到那张记了一个月的账单。生活用品、饭钱、交通费，还有被{honor}划掉过一次、又被她默默加回去的水电。现在，这些终于可以一点点归还。",
           },
           {
             speaker: "",
@@ -3754,7 +3754,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "",
-            text: "如今钱已经到账，她有了搬出去的条件，心里却没有预想中的轻松。尘先生应该也记得一个月的期限。也许今晚回去，他就会说：既然工资发了，也可以看看新的住处了。",
+            text: "如今钱已经到账，她有了搬出去的条件，心里却没有预想中的轻松。{honor}应该也记得一个月的期限。也许今晚回去，他就会说：既然工资发了，也可以看看新的住处了。",
           },
           {
             speaker: "",
@@ -3777,7 +3777,7 @@ export const CHAPTERS = [
             text: "晚上，你回到家时，九重春已经在餐桌旁坐了一会儿。桌上放着整理好的账单，纸张压在手机下面，四角平整，数字分得很清楚。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "这是什么？",
           },
           {
@@ -3789,7 +3789,7 @@ export const CHAPTERS = [
             text: "你站在桌边扫了一遍，没有立刻坐下。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "怎么又把水电加回去了？上次不是说清楚了吗？",
           },
           {
@@ -3797,7 +3797,7 @@ export const CHAPTERS = [
             text: "那是上次。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "账还能每个月复活？",
           },
           {
@@ -3805,7 +3805,7 @@ export const CHAPTERS = [
             text: "她没接这句，只把提前算好的金额递给你看。你没有接手机，在她对面坐了下来。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "饭钱和你自己买的东西不用算，剩下的按之前说好的来。",
           },
           {
@@ -3821,7 +3821,7 @@ export const CHAPTERS = [
             text: "已经一个月了。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "我知道。",
           },
           {
@@ -3869,7 +3869,7 @@ export const CHAPTERS = [
             text: "你盯着它看了一会儿。最后还是没能装作没看见。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "九重春。",
           },
           {
@@ -3885,7 +3885,7 @@ export const CHAPTERS = [
             text: "你甚至有些后悔叫住她。可她还在等。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "你……想不想继续住在这里？",
           },
           {
@@ -3893,7 +3893,7 @@ export const CHAPTERS = [
             text: "说出口以后，你立刻觉得这句话过于直白。你低头把账单重新压平，假装自己只是在确认一件与房租有关的事。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "我的意思是，如果还没找到合适的地方，也不用急着——",
           },
           {
@@ -3913,7 +3913,7 @@ export const CHAPTERS = [
             text: "心里某个一直悬着的地方终于落了下去，但你不太愿意仔细分辨那究竟是什么。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "那就继续住。",
           },
           {
@@ -3925,7 +3925,7 @@ export const CHAPTERS = [
             text: "你本想说不会。可这种话太像安慰，也不完全诚实。她确实带来了不少原本没有的麻烦：浴室里多出来的东西、冰箱里需要区分的份额，还有晚回家时，不得不想起屋里是不是有人在等。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "我如果真是个嫌麻烦的人，那天晚上就不会管你。",
           },
           {
@@ -3942,10 +3942,10 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "尘先生。",
+            text: "{honor}。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "嗯。",
           },
           {
@@ -3957,7 +3957,7 @@ export const CHAPTERS = [
             text: "不是暂时还没找到住处，也不是继续同居比较节省。只是想留下来。她的声音仍然很轻，目光却没有像平时那样移开。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "知道了。",
           },
           {
@@ -3965,7 +3965,7 @@ export const CHAPTERS = [
             text: "……只有这样？",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "不然呢？",
           },
           {
@@ -3973,7 +3973,7 @@ export const CHAPTERS = [
             text: "你站起身，取下冰箱门上的购物清单，在最下面补了一行：牛奶，两盒。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "明天回来的时候记得买。",
           },
           {
@@ -3997,7 +3997,7 @@ export const CHAPTERS = [
             text: "你下意识又想把话说得含糊一点，比如先问她对通勤距离有没有要求，或者只说最近可以留意一下房源。可她刚才已经大大方方地说了想留下，你似乎也没有理由继续躲。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "还有件事。",
           },
           {
@@ -4005,7 +4005,7 @@ export const CHAPTERS = [
             text: "嗯？",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "既然要继续住，这里就不太合适了。",
           },
           {
@@ -4013,7 +4013,7 @@ export const CHAPTERS = [
             text: "她的神情凝住了一瞬。你立刻意识到这句话听起来很容易误会，只好硬着头皮把后半句说完。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "我的意思是，得换个两居室。总不能一直让你睡沙发。",
           },
           {
@@ -4021,7 +4021,7 @@ export const CHAPTERS = [
             text: "说到这里，再绕弯子反而显得更奇怪。你把笔放回桌上，抬头看她。",
           },
           {
-            speaker: "你",
+            speaker: "{name}",
             text: "这周末，要不要一起去看看房子？",
           },
           {
@@ -4034,7 +4034,7 @@ export const CHAPTERS = [
           },
           {
             speaker: "九重春",
-            text: "好，尘先生。",
+            text: "好，{honor}。",
           },
         ],
       },
