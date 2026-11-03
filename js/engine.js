@@ -263,8 +263,10 @@ export class GalEngine {
       this.setPlayerName(DEFAULT_PLAYER_NAME);
     }
     this.ui.showGame();
+    this.phase = "scene";
     this.syncHud(false);
-    this.beginChapter();
+    this.playCurrentScene();
+    this.autosave();
     return true;
   }
 
