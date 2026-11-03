@@ -736,26 +736,16 @@ export class GalEngine {
       this.finishCampaign();
       return;
     }
-    this.resume.mode = "bridge";
-    this.resume.lineIndex = 0;
-    this.resume.choiceIndex = null;
-    this.awaitingChoice = true;
+
+    // 正常游玩时让四部分沿过渡文本连续推进；测试节点仍从各章节入口开始。
+    this.awaitingChoice = false;
     this._waitingAdvance = false;
-    this.ui.setSpeaker("");
-    this.ui.setDialogue("——");
-    this.ui.setClickHint(false);
-    this.ui.showChoices([
-      {
-        text: "时间往前走一些……",
-        onSelect: () => {
-          this.awaitingChoice = false;
-          this.ui.hideChoices();
-          this.chapterIndex += 1;
-          this.beginChapter();
-          this.autosave();
-        },
-      },
-    ]);
+    this.ui.hideChoices();
+    this.chapterIndex += 1;
+    this.sceneIndex = 0;
+    this.phase = "scene";
+    this.syncHud(false);
+    this.playCurrentScene();
     this.autosave();
   }
 
