@@ -1,0 +1,50 @@
+{
+  "name": "kokonoe-haru",
+  "version": "1.0.0",
+  "private": true,
+  "description": "《回家的灯》Windows 桌面版",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "45.2.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "io.github.pbc742928.kokonoeharu",
+    "productName": "回家的灯",
+    "artifactName": "Kokonoe-Haru-Setup-${version}.${ext}",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "css/**/*",
+      "js/**/*",
+      "assets/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "回家的灯",
+      "deleteAppDataOnUninstall": false
+    }
+  }
+}
