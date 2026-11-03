@@ -56,8 +56,19 @@ function splitDialogueChunks(text, maxLen = DIALOGUE_CHUNK_MAX) {
         } else {
           cut += 1;
         }
-        pieces.push(rest.slice(0, cut).trim());
-        rest = rest.slice(cut).trim();
+        const head = rest.slice(0, cut).trim();
+        const tail = rest.slice(cut).trim();
+
+        // 不把句号或“下。”这类极短句尾单独留到下一框。
+        // 允许当前框略微超过建议字数，也比制造孤立标点自然。
+        if (tail && tail.length <= 4) {
+          pieces.push(rest);
+          rest = "";
+          break;
+        }
+
+        pieces.push(head);
+        rest = tail;
       }
       if (rest) pieces.push(rest);
     }
@@ -66,7 +77,11 @@ function splitDialogueChunks(text, maxLen = DIALOGUE_CHUNK_MAX) {
   const merged = [];
   for (const part of pieces) {
     const prev = merged[merged.length - 1];
-    if (prev && prev.length + part.length <= Math.floor(maxLen * 0.85)) {
+    const isShortTail = part.length <= 4 || /^[。！？；…，、：,.!?]+$/.test(part);
+    if (
+      prev &&
+      (isShortTail || prev.length + part.length <= Math.floor(maxLen * 0.85))
+    ) {
       merged[merged.length - 1] = prev + part;
     } else {
       merged.push(part);
