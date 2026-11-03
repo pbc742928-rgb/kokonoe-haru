@@ -1660,10 +1660,6 @@ export const CHAPTERS = [
                 text: "她闭着眼，睫毛在灯下投出一小片阴影。嘴角几乎不动，却像终于允许自己瘫一会儿。",
               },
               {
-                speaker: "{name}",
-                text: "剩下的慢慢补。",
-              },
-              {
                 speaker: "九重春",
                 text: "那就……慢慢补。",
               },
