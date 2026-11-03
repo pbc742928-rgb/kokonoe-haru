@@ -604,7 +604,11 @@ export class GalEngine {
       return;
     }
     if (mode === "chapterIntro") {
-      this.startChapterIntro({ resume: true });
+      // 兼容旧存档：跳过已经取消的章节标题页，直接恢复正文。
+      this.resume.mode = "lines";
+      this.resume.lineIndex = 0;
+      this.playCurrentScene();
+      this.autosave();
       return;
     }
 
@@ -677,28 +681,7 @@ export class GalEngine {
     this.sceneIndex = 0;
     this.phase = "scene";
     this.syncHud(false);
-    this.startChapterIntro({ resume: false });
-  }
-
-  startChapterIntro({ resume = false } = {}) {
-    const ch = this.chapter;
-    if (!ch) {
-      this.finishCampaign();
-      return;
-    }
-    this.lineQueue = expandLinesForDisplay([
-      {
-        speaker: "",
-        text: `【${ch.label}】\n${ch.timeLabel}`,
-      },
-    ]);
-    this.resume.mode = "chapterIntro";
-    this.resume.choiceIndex = null;
-    if (!resume) this.resume.lineIndex = 0;
-    this.playLineAt(this.resume.lineIndex, {
-      skipLog: resume,
-      instant: resume,
-    });
+    this.playCurrentScene();
   }
 
   playCurrentScene() {
@@ -861,11 +844,6 @@ export class GalEngine {
 
   onQueueFinished() {
     const mode = this.resume.mode;
-    if (mode === "chapterIntro") {
-      this.playCurrentScene();
-      this.autosave();
-      return;
-    }
     if (mode === "lines") {
       const card = this.currentCard;
       if (card?.choices?.length) {
