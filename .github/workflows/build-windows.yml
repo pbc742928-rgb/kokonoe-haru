@@ -8,6 +8,10 @@ on:
     paths:
       - package.json
       - electron/**
+      - index.html
+      - css/**
+      - js/**
+      - assets/**
       - .github/workflows/build-windows.yml
 
 permissions:
